@@ -1,12 +1,12 @@
-package stlRoad;
+package common;
 
 public class LngLat {
 	/**
-	 * ¾­¶È
+	 * ï¿½ï¿½ï¿½ï¿½
 	 */
 	double lng;
 	/**
-	 * Î³¶È
+	 * Î³ï¿½ï¿½
 	 */
 	double lat;
 	public double getLng() {

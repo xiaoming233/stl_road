@@ -1,4 +1,4 @@
-package stlRoad;
+package common;
 
 import java.sql.Connection;  
 import java.sql.DriverManager;  
@@ -17,9 +17,9 @@ public class DBHelper {
   
     public DBHelper() {  
         try {  
-            Class.forName(name);//Ö¸¶¨Á¬½ÓÀàÐÍ  
-            conn = DriverManager.getConnection(url, user, password);//»ñÈ¡Á¬½Ó  
-            pst = conn.prepareStatement("");//×¼±¸Ö´ÐÐÓï¾ä  
+            Class.forName(name);//Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  
+            conn = DriverManager.getConnection(url, user, password);//ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½  
+            pst = conn.prepareStatement("");//×¼ï¿½ï¿½Ö´ï¿½ï¿½ï¿½ï¿½ï¿½  
         } catch (Exception e) {  
             e.printStackTrace();  
         }  

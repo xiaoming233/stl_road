@@ -5,72 +5,37 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import common.DBHelper;
+import common.LngLat;
+
 
 public class stlMapRoad {
 	/**
-	 * ¼ÆËã |p1 p2| X |p1 p|
-	 * @param p1 ¶¥µã1
-	 * @param p2 ¶¥µã2
-	 * @param p ÅĞ¶Ïµã
+	 *  |p1 p2| X |p1 p|
+	 * @param p1 åŸºç‚¹1 
+	 * @param p2 åŸºç‚¹2
+	 * @param p åˆ¤æ–­ç‚¹
 	 * @return
 	 */
 	public static double getCross(LngLat p1,LngLat p2,LngLat p) {
-		return (p2.lng - p1.lng) * (p.lat - p1.lat) -(p.lng - p1.lng) * (p2.lat - p1.lat);
+		return (p2.getLng() - p1.getLng()) * (p.getLat() - p1.getLat()) -(p.getLng() - p1.getLng()) * (p2.getLat() - p1.getLat());
 	}
 /**
  * 
- * @param a_lng ÊäÈë¾­¶È
- * @param a_lat ÊäÈëÎ³¶È
- * @param points ¾­Î³¶È·¶Î§¶à±ßĞÎ
+ * @param a_lng ç»åº¦
+ * @param a_lat çº¬åº¦
+ * @param points 4ä¸ªåŸºç‚¹
  * @return 
  */
-	public static boolean isPoinInPoly(LngLat lngLat ,LngLat [] points) {
-		boolean flag=false;
-		int iSum=0,icount;
-		double d_lng1,d_lng2,d_lat1,d_lat2,d_lng;
-		d_lat1=points[1].lat;
-		d_lng1=points[1].lng;
-		d_lat2=points[3].lat;
-		d_lng2=points[3].lng;
-		if (((lngLat.lat<=d_lat1)&&(lngLat.lat>=d_lat2))&&((lngLat.lng<=d_lng1)&&(lngLat.lng>=d_lng2))) {
-			flag=true;
-		}
-//		for(int i=0;i<icount-1;i++)
-//		{
-//			if (i==icount-1) {
-//				d_lng1=points[i].lng;
-//				d_lat1=points[i].lat;
-//				d_lng2=points[0].lng;
-//				d_lat2=points[0].lat;
-//			} else {
-//				d_lng1=points[i].lng;
-//				d_lat1=points[i].lat;
-//				d_lng2=points[i+1].lng;
-//				d_lat2=points[i+1].lat;
-//			}
-//			//ÒÔÏÂÓï¾äÅĞ¶ÏAµãÊÇ·ñÔÚ±ßµÄÁ½¶ËµãµÄË®Æ½Æ½ĞĞÏßÖ®¼ä£¬ÔÚÔò¿ÉÄÜÓĞ½»µã£¬¿ªÊ¼ÅĞ¶Ï½»µãÊÇ·ñÔÚ×óÉäÏßÉÏ
-//            if (((lngLat.lat >= d_lat1) && (lngLat.lat < d_lat2)) || ((lngLat.lat >= d_lat2) && (lngLat.lat < d_lat1)))
-//            {
-//                if (Math.abs(d_lat1 - d_lat2) > 0)
-//                {
-//                    //µÃµ½ AµãÏò×óÉäÏßÓë±ßµÄ½»µãµÄx×ø±ê£º
-//                	d_lng = d_lng1 - ((d_lng1 - d_lng2) * (d_lat1 - lngLat.lat)) / (d_lat1 - d_lat2);
-//
-//                    // Èç¹û½»µãÔÚAµã×ó²à£¨ËµÃ÷ÊÇ×öÉäÏßÓë ±ßµÄ½»µã£©£¬ÔòÉäÏßÓë±ßµÄÈ«²¿½»µãÊı¼ÓÒ»£º
-//                    if (d_lng < lngLat.lng)
-//                        iSum++;
-//                }
-//            }
-//            if (iSum % 2 != 0)
-//            	flag=true;
-//		}
-		return flag;
+	public static boolean isPoinInPoly(LngLat p ,LngLat [] points) {
+
+		return getCross(points[0],points[1],p) * getCross(points[2],points[3],p) >= 0 && getCross(points[1],points[2],p) * getCross(points[3],points[0],p) >= 0; 
 	}
 
 /**
  * 
- * @param str Î³¶È£¬¾­¶È
- * @return £¨LngLat£©¾­Î³¶È
+ * @param str å­—ç¬¦ä¸²å½¢å¼çš„ç»çº¬åº¦
+ * @return è¿”å›LngLat çš„ç»åº¦çº¬åº¦
  */	
 	public static LngLat split(String str) {
 		String [] strings=str.split(",");
@@ -81,8 +46,8 @@ public class stlMapRoad {
 	}
 	/**
 	 * 
-	 * @param lat stlµÄÎ³¶È
-	 * @param lng stlµÄ¾­¶È
+	 * @param lat stlçš„çº¬åº¦
+	 * @param lng stlçš„ç»åº¦
 	 * @return LngLat
 	 */
 	public static LngLat toLngLat (String lat,String lng) {
@@ -97,48 +62,56 @@ public class stlMapRoad {
 	}
 	/**
 	 * 
-	 * @param str ÊäÈëµÄ¾­¶È»òÎ³¶ÈµÄ×Ö·û´®
-	 * @param i ²åÈëĞ¡ÊıµãµÄÎ»ÖÃ
-	 * @return ´øĞ¡ÊıµãµÄ¾­Î³¶È×Ö·û´®
+	 * @param str ç»åº¦æˆ–çº¬åº¦å­—ç¬¦ä¸²
+	 * @param i éœ€è¦æ’å…¥çš„ä½ç½®
+	 * @return 
 	 */
 	private static String latLngStingAddPiont(String str,int i) {
 		StringBuilder sb=new StringBuilder(str);
 		sb.insert(i, ".");
 		return sb.toString();
 	}
-	public static void getPiontInPoly(int i) {
+	public static void getPiontInPoly(String str) {
 		
 		String sql1="SELECT rid,A,B,C,D FROM road";
-		String sql2="select COUNT(UniqueID) AS icount from stl_p1_d01_copy";
+		String sql2="select COUNT(UniqueID) AS icount from stl_p1_d"+str;
 		StringBuilder values=new StringBuilder();;
 		StringBuilder sql4=null;
 		StringBuilder sql5=null;
-		int  icount=0,start=i,end=i+500000,istep=1;
+		int  icount=0;
 		int rid;
 		DBHelper db=new DBHelper();
 		DBHelper db2=new DBHelper();
-		
+		DBHelper db3=new DBHelper();
 		try {
 			db2.conn.setAutoCommit(false);
-			ResultSet roadSet=db.pst.executeQuery(sql1);
-			if(roadSet.next()){
-			LngLat p_A,p_B,p_C,p_D;
-			p_A=split(roadSet.getString("A"));
-			p_B=split(roadSet.getString("B"));
-			p_C=split(roadSet.getString("C"));
-			p_D=split(roadSet.getString("D"));
-			rid=roadSet.getInt("rid");
-			LngLat [] points={p_A,p_B,p_C,p_D};
 			ResultSet stlSet=null;
 			ResultSet count=db.pst.executeQuery(sql2);
 			if (count.next()) {
 				icount=count.getInt(1);
 			}
-			   while (true) {
-				sql5=new StringBuilder("SELECT UniqueID,DeviceID,Speed,Longitude,Latitude FROM stl_p1_d01_copy WHERE id BETWEEN ");
+			ResultSet roadSet=db.pst.executeQuery(sql1);
+			while(roadSet.next()){
+				
+			rid=roadSet.getInt("rid");	
+			if (rid==1) {
+				continue;
+			}
+			LngLat A,B,C,D;
+			A=split(roadSet.getString("A"));
+			B=split(roadSet.getString("B"));
+			C=split(roadSet.getString("C"));
+			D=split(roadSet.getString("D"));
+
+			System.out.println("Now, it is map road "+rid);
+			LngLat [] points={A,B,C,D};
+			int start=1,end=500000;
+			   while (end<=icount) {
+				sql5=new StringBuilder("SELECT UniqueID,DeviceID,Speed,Longitude,Latitude FROM stl_p1_d"+str+" WHERE id BETWEEN ");
 				sql5.append(String.valueOf(start)+" AND "+String.valueOf(end));
 				System.out.println(sql5);
-				stlSet=db.pst.executeQuery(sql5.toString());
+				stlSet=db3.pst.executeQuery(sql5.toString());
+				boolean flag=false;
 				while (stlSet.next()) {
 					if (isPoinInPoly(toLngLat(stlSet.getString("Latitude"),stlSet.getString("Longitude")), points)) {
 						
@@ -148,55 +121,42 @@ public class stlMapRoad {
 						values.append(stlSet.getString(3)+",");
 						values.append(latLngStingAddPiont(stlSet.getString(5), 2)+",");
 						values.append(latLngStingAddPiont(stlSet.getString(4), 3)+"),");
-						
+						flag=true;
 					} 
 					
 				}
-				sql4=new StringBuilder("insert into road_stl (uid,rid,deviceid,speed,lat,lng) values ");
-				sql4.append(values.deleteCharAt(values.length()-1));
-				System.out.println(sql4);
-				values=new StringBuilder();
-				db2.pst.addBatch(sql4.toString());
-				db2.pst.executeBatch();
-				db2.conn.commit();
+				if (flag) {
+					sql4=new StringBuilder("insert into road_stl_"+str+" (uid,rid,deviceid,speed,lat,lng) values ");
+					sql4.append(values.deleteCharAt(values.length()-1));
+//					System.out.println(sql4);
+					values=new StringBuilder();
+					db2.pst.addBatch(sql4.toString());
+					db2.pst.executeBatch();
+					db2.conn.commit();
+				}				
 				start=end+1;
 				end+=500000;
-				istep++;
-				if (end>=icount) {
-					break;
-				}
 
-			  }  
+			  }   
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		finally {
-			System.out.println("finish!");
 			db.close();
 			db2.close();
+			db3.close();
 		}
 	}
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-//		getPiontInPoly(1);
-		
-		DBHelper db=new DBHelper();
-		try {
-			for(int i=10;i<=31;i++)
-			{
-				String sql0="ALTER TABLE `stl_p1_d"+String.valueOf(i)+"MODIFY COLUMN `F1`  int(11) NOT NULL AUTO_INCREMENT AFTER `TimeStamp`,DROP PRIMARY KEY,ADD PRIMARY KEY (`F1`)";
-				System.out.println(sql0);
-				db.pst.executeUpdate(sql0);
-			}
-		} catch (SQLException  e) {
-			// TODO: handle exception
-			System.out.println(e.toString());
-		}
-		finally {
-			db.close();
-		}
+		getPiontInPoly("03");
+//		for(int i=10;i<=31;i++)
+//		{
+//		getPiontInPoly(String.valueOf(i));
+//		}
+		System.out.println("finish");
 
 	}
 
